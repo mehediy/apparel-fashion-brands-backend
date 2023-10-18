@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 app.use(cors());
@@ -22,6 +22,40 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    const database = client.db("apparelDB");
+
+    //***************************************** */
+    // ************ GET POST Dynamic*************/
+    //***************************************** */
+    app.get("/products/:productType", async (req, res) => {
+      const productType = req.params.productType;
+      const collection = database.collection(productType);
+      const cursor = collection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.post("/products/:productType", async (req, res) => {
+      const productType = req.params.productType;
+      const collection = database.collection(productType);
+      const product = req.body;
+      const newProduct = {
+        name: product.name,
+        brand: product.brand,
+        type: product.type,
+        price: product.price,
+        description: product.description,
+        image: product.image,
+        rating: product.rating,
+      };
+
+      const result = await collection.insertOne(newProduct);
+      res.send(result);
+
+      console.log(newProduct);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
@@ -29,7 +63,7 @@ async function run() {
     );
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
