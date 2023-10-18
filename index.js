@@ -28,17 +28,17 @@ async function run() {
     //***************************************** */
     // ************ GET POST Dynamic*************/
     //***************************************** */
-    app.get("/products/:productType", async (req, res) => {
-      const productType = req.params.productType;
-      const collection = database.collection(productType);
+    app.get("/products/:productBrand", async (req, res) => {
+      const productBrand = req.params.productBrand;
+      const collection = database.collection(productBrand);
       const cursor = collection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
-    app.post("/products/:productType", async (req, res) => {
-      const productType = req.params.productType;
-      const collection = database.collection(productType);
+    app.post("/products/:productBrand", async (req, res) => {
+      const productBrand = req.params.productBrand;
+      const collection = database.collection(productBrand);
       const product = req.body;
       const newProduct = {
         name: product.name,
@@ -53,7 +53,50 @@ async function run() {
       const result = await collection.insertOne(newProduct);
       res.send(result);
 
-      console.log(newProduct);
+      //   console.log(newProduct);
+    });
+
+    //***************************************** */
+    // ************ Get, Update Product*************/
+    //***************************************** */
+
+    app.get("/products/:productBrand/:id", async (req, res) => {
+      const productBrand = req.params.productBrand;
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const collection = database.collection(productBrand);
+      const result = await collection.findOne(query);
+
+      res.send(result);
+    });
+
+    app.put("/products/:productBrand/:id", async (req, res) => {
+      const productBrand = req.params.productBrand;
+      const id = req.params.id;
+      const collection = database.collection(productBrand);
+      const filter = { _id: new ObjectId(id) };
+      const product = req.body;
+      const options = { upsert: true };
+      const updatedProduct = {
+        $set: {
+          name: product.name,
+          brand: product.brand,
+          type: product.type,
+          price: product.price,
+          description: product.description,
+          image: product.image,
+          rating: product.rating,
+        },
+      };
+
+      const result = await collection.updateOne(
+        filter,
+        updatedProduct,
+        options
+      );
+      res.send(result);
+
+      //   console.log(updatedProduct);
     });
 
     // Send a ping to confirm a successful connection
