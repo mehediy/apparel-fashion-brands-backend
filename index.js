@@ -44,6 +44,7 @@ async function run() {
       //   const collection = database.collection(productBrand);
       const product = req.body;
       const newProduct = {
+        date: new Date(),
         brandId: productBrand,
         name: product.name,
         brand: product.brand,
@@ -103,6 +104,15 @@ async function run() {
       res.send(result);
 
       //   console.log(updatedProduct);
+    });
+
+    //***************************************** */
+    // ************ Get Latest Products*************/
+    //***************************************** */
+    app.get("/latest_products/", async (req, res) => {
+      const cursor = productsCollection.find().sort({ date: -1 }).limit(8);
+      const result = await cursor.toArray();
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
