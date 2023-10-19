@@ -25,6 +25,7 @@ async function run() {
 
     const database = client.db("apparelDB");
     const productsCollection = database.collection("productsCollection");
+    const usersCollection = database.collection("usersCollection");
 
     //***************************************** */
     // ************ GET POST Dynamic*************/
@@ -63,17 +64,17 @@ async function run() {
     // ************ Get, Update Product*************/
     //***************************************** */
 
-    app.get("/products/:productBrand/:id", async (req, res) => {
-      const productBrand = req.params.productBrand;
+    app.get("/product/:id", async (req, res) => {
+      //   const productBrand = req.params.productBrand;
       const id = req.params.id;
-      const query = { _id: new ObjectId(id), brandId: productBrand };
+      const query = { _id: new ObjectId(id) };
       //   const collection = database.collection(productBrand);
       const result = await productsCollection.findOne(query);
 
       res.send(result);
     });
 
-    app.put("/products/:productBrand/:id", async (req, res) => {
+    app.put("/product/:id", async (req, res) => {
       const productBrand = req.params.productBrand;
       const id = req.params.id;
       //   const collection = database.collection(productBrand);
