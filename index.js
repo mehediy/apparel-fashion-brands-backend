@@ -24,23 +24,26 @@ async function run() {
     await client.connect();
 
     const database = client.db("apparelDB");
+    const productsCollection = database.collection("productsCollection");
 
     //***************************************** */
     // ************ GET POST Dynamic*************/
     //***************************************** */
     app.get("/products/:productBrand", async (req, res) => {
       const productBrand = req.params.productBrand;
-      const collection = database.collection(productBrand);
-      const cursor = collection.find();
+      //   const collection = database.collection(productBrand);
+      const query = { brandId: productBrand };
+      const cursor = productsCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
 
     app.post("/products/:productBrand", async (req, res) => {
       const productBrand = req.params.productBrand;
-      const collection = database.collection(productBrand);
+      //   const collection = database.collection(productBrand);
       const product = req.body;
       const newProduct = {
+        brandId: productBrand,
         name: product.name,
         brand: product.brand,
         type: product.type,
@@ -50,7 +53,7 @@ async function run() {
         rating: product.rating,
       };
 
-      const result = await collection.insertOne(newProduct);
+      const result = await productsCollection.insertOne(newProduct);
       res.send(result);
 
       //   console.log(newProduct);
@@ -63,9 +66,9 @@ async function run() {
     app.get("/products/:productBrand/:id", async (req, res) => {
       const productBrand = req.params.productBrand;
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const collection = database.collection(productBrand);
-      const result = await collection.findOne(query);
+      const query = { _id: new ObjectId(id), brandId: productBrand };
+      //   const collection = database.collection(productBrand);
+      const result = await productsCollection.findOne(query);
 
       res.send(result);
     });
@@ -73,7 +76,7 @@ async function run() {
     app.put("/products/:productBrand/:id", async (req, res) => {
       const productBrand = req.params.productBrand;
       const id = req.params.id;
-      const collection = database.collection(productBrand);
+      //   const collection = database.collection(productBrand);
       const filter = { _id: new ObjectId(id) };
       const product = req.body;
       const options = { upsert: true };
@@ -89,7 +92,7 @@ async function run() {
         },
       };
 
-      const result = await collection.updateOne(
+      const result = await productsCollection.updateOne(
         filter,
         updatedProduct,
         options
