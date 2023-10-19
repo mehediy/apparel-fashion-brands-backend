@@ -82,6 +82,7 @@ async function run() {
       const options = { upsert: true };
       const updatedProduct = {
         $set: {
+          brandId: product.brandId,
           name: product.name,
           brand: product.brand,
           type: product.type,
@@ -91,6 +92,7 @@ async function run() {
           rating: product.rating,
         },
       };
+      //   console.log(updatedProduct);
 
       const result = await productsCollection.updateOne(
         filter,
