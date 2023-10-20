@@ -147,6 +147,15 @@ async function run() {
       );
       res.send(result);
     });
+
+    app.post("/cart-products", async (req, res) => {
+      const ids = req.body.cartItems;
+      // console.log(ids);
+      const query = { _id: { $in: ids.map((id) => new ObjectId(id)) } };
+      const result = await productsCollection.find(query).toArray();
+      res.send(result);
+      // console.log(result);
+    });
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
