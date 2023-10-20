@@ -148,6 +148,22 @@ async function run() {
       res.send(result);
     });
 
+    app.delete("/user/:email/:itemId", async (req, res) => {
+      const email = req.params.email;
+
+      const itemId = req.params.itemId;
+      const filter = { email: email };
+
+      const updatedUser = {
+        $pull: {
+          cart: itemId,
+        },
+      };
+      const result = await usersCollection.updateOne(filter, updatedUser);
+      res.send(result);
+      // console.log(filter);
+    });
+
     app.post("/cart-products", async (req, res) => {
       const ids = req.body.cartItems;
       // console.log(ids);
