@@ -164,7 +164,7 @@ async function run() {
       // console.log(filter);
     });
 
-    app.post("/cart-products", async (req, res) => {
+    app.post("/user/:email", async (req, res) => {
       const ids = req.body.cartItems;
       // console.log(ids);
       const query = { _id: { $in: ids.map((id) => new ObjectId(id)) } };
